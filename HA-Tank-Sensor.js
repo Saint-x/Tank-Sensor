@@ -2,7 +2,7 @@ class TankCard extends HTMLElement {
   constructor() {
     super();
     console.info(
-      "%c Saint`s Tank-Card %c v.0.1.1",
+      "%c Saint`s Tank-Card %c v.0.1.3",
       "background:#fff;color:#000;font-weight:bold;padding:6px 12px;border-radius:4px;",
       "color:inherit;font-weight:bold;padding:6px 12px;"
     );
