@@ -2,7 +2,7 @@ class TankCard extends HTMLElement {
   constructor() {
     super();
     console.info(
-      "%c Saint`s Tank-Card %c v.0.1",
+      "%c Saint`s Tank-Card %c v.0.1.2",
       "background:#fff;color:#000;font-weight:bold;padding:6px 12px;border-radius:4px;",
       "color:inherit;font-weight:bold;padding:6px 12px;"
     );
@@ -17,14 +17,14 @@ class TankCard extends HTMLElement {
 
   static getStubConfig() {
     return {
-      type: "custom:tank-card",
+      type: "custom:saints-tank-card",
       title: "Saint`s Tank Card",
-      tank_capacity: 1500,
+      tank_capacity: 1000,
       level_sensor: "",
       content_type: "water",
       unit: "L",
       tank_form: "rect",
-      bg_color: "rgba(0,0,0,0.4)",
+      bg_color: "rgba(255, 255, 255, 0.6)",
       show_unittank: true,
       tank_name: "Tank"
     };
@@ -38,11 +38,15 @@ class TankCard extends HTMLElement {
     this.levelSensor = config.level_sensor || "";
     this.waterLevelSensor = config.water_level_sensor || "";
     this.lastDataTimeSensor = config.last_data_time || "";
-    this.title = config.title || "Tank Card";
+    this.title = config.title || "Saint`s Tank Card";
     this.showLiters = config.show_unittank !== undefined ? config.show_unittank : true;
-    this.bgColor = config.bg_color || "rgba(0,0,0,0.3)";
+    this.bgColor = config.bg_color || "rgba(0,0,0,0)";
+    this.tankBgColor = config.tank_bg_color || "rgb(73, 73, 73)";
     this.fontFamily = config.font_family || "sans-serif";
-    this.fontSize = config.font_size || "1em";
+    this.fontColor = config.font_color || "rgba(0,0,0,1)";
+    this.fontSizeHeader = config.font_size || "1.7em";
+    this.fontSize = config.font_size || "1.2em";
+    this.fontSizeFooter = config.font_size || "1em";
     this.tankForm = config.tank_form || "rect";
 
     switch (config.content_type) {
@@ -92,7 +96,23 @@ class TankCard extends HTMLElement {
     }
 
     if (this.lastDataTimeSensor) {
-      lastDataTime = this._hass.states[this.lastDataTimeSensor]?.state ?? "-";
+      const rawDate = this._hass.states[this.lastDataTimeSensor]?.state ?? "-";
+
+      if (rawDate !== "-") {
+        const date = new Date(rawDate);
+
+        if (!isNaN(date)) {
+          lastDataTime = date.toLocaleString("de-DE", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+          });
+        } else {
+          lastDataTime = rawDate;
+        }
+      }
     }
 
     return { waterLevel, lastDataTime };
@@ -118,20 +138,20 @@ class TankCard extends HTMLElement {
     const style = document.createElement("style");
     style.textContent = `
       .container { display:flex; flex-direction:column; background:${this.bgColor}; padding:10px; border-radius:12px; font-family:${this.fontFamily}; height:100%; box-sizing:border-box; }
-      .title { text-align:center; font-size:1.7em; color:#fff; }
-      .info-bar { display:flex; justify-content:space-between; font-size:1.2em; font-weight:bold; color:#fff; }
-      .info-left { display:grid; grid-template-columns:auto auto; column-gap:10px; row-gap:6px; padding-left:12px; padding-bottom:1.2em; }
-      .info-right { display:flex; flex-direction:column; align-items:flex-end; padding-right:12px; gap:4px; }
-      .tanks { display:flex; gap:12px; justify-content:center; flex:1; align-items:flex-end; }
-      .tank { width:220px; max-width:100%; display:flex; flex-direction:column; align-items:center; background:#2b2b2b; border-radius:${tankRadius}; padding:10px; box-shadow:inset 0 3px 6px rgba(255,255,255,0.08), inset 0 -6px 10px rgba(0,0,0,0.7); height:100%; }
-      .tank-name { font-size:1em; margin-bottom:8px; color:#fff; }
+      .title { text-align:center; font-size:${this.fontSizeHeader}; font-weight:bold; color:${this.fontColor}; }
+      .info-bar { display:flex; justify-content:space-between; font-size:${this.fontSize}; font-weight:bold; color:${this.fontColor}; }
+      .info-left { display:grid; grid-template-columns:auto auto; column-gap:10px; row-gap:6px; }
+      .info-right { display:grid; grid-template-columns:auto auto; column-gap:10px; row-gap:6px;  }
+      .tanks { display:flex; justify-content:center; align-items:flex-end; flex:1; }
+      .tank { width:200px; max-width:100%; height:500px; max-height:100%; display:flex; flex-direction:column; align-items:center; background:${this.tankBgColor}; border-radius:${tankRadius}; padding:10px; box-shadow:inset 0 3px 6px rgba(255,255,255,0.08), inset 0 -6px 10px rgba(0,0,0,0.7); }
+      .tank-name { font-size:${this.fontSize}; margin-bottom:8px; color:${this.fontColor}; }
       .tank-level { width:100%; flex:1; border-radius:${tankRadius}; overflow:hidden; position:relative; display:flex; align-items:flex-end; justify-content:center;
         background: radial-gradient(circle at center, #ddd 0%, #bdbdbd 80%, #888 100%);
         border:5px solid transparent;
         box-shadow: inset 0 2px 3px rgba(255,255,255,0.6), inset 0 -6px 10px rgba(0,0,0,0.9), 0 6px 10px rgba(0,0,0,0.6);
       }
       .tank-fill { width:100%; background:${this.fillColor}; display:flex; align-items:flex-end; justify-content:center; font-size:0.9em; font-weight:bold; color:#FFF; text-shadow:0 0 4px rgba(0,0,0,1.0); padding-bottom:0.2em; transition:height 0.4s ease; box-shadow: inset 0 4px 6px rgba(255,255,255,0.2), inset 0 -6px 8px rgba(0,0,0,0.6); }
-      .data-time {  color:#fff; text-align:left; font-size:1em; margin-top:10px; }
+      .data-time { color:${this.fontColor}; text-align:left; font-size:${this.fontSizeFooter}; margin-top:10px; }
     `;
 
     const container = document.createElement("div");
@@ -141,8 +161,8 @@ class TankCard extends HTMLElement {
       <div class="title">${this.title}</div>
       <div class="info-bar">
         <div class="info-left">
-          <div>${systemFillPercent.toFixed(1)}%</div>
-          <div>Wasser: ${waterLevel}</div>
+          <div>Füllung:</div><div id="fill-info">${systemFillPercent.toFixed(1)}%</div>
+          <div>Wasser:</div><div id="water-info">${waterLevel}m</div>
         </div>
         <div class="info-right">
           <div>Max:</div><div>${totalCapacity.toFixed(0)} ${this.unit}</div>
@@ -150,6 +170,34 @@ class TankCard extends HTMLElement {
         </div>
       </div>
     `;
+
+    const fillInfo = container.querySelector("#fill-info");
+    if (fillInfo && this.levelSensor) {
+      fillInfo.style.cursor = "pointer";
+      fillInfo.addEventListener("click", () => {
+        this.dispatchEvent(new CustomEvent("hass-more-info", {
+          bubbles: true,
+          composed: true,
+          detail: {
+            entityId: this.levelSensor,
+          },
+        }));
+      });
+    }
+
+    const waterInfo = container.querySelector("#water-info");
+    if (waterInfo && this.waterLevelSensor) {
+      waterInfo.style.cursor = "pointer";
+      waterInfo.addEventListener("click", () => {
+        this.dispatchEvent(new CustomEvent("hass-more-info", {
+          bubbles: true,
+          composed: true,
+          detail: {
+            entityId: this.waterLevelSensor,
+          },
+        }));
+      });
+    }
 
     const tankDiv = document.createElement("div");
     tankDiv.className = "tank";
@@ -193,7 +241,7 @@ class TankCard extends HTMLElement {
   getCardSize() { return 6; }
 }
 
-customElements.define("tank-card", TankCard);
+customElements.define("saints-tank-card", TankCard);
 
 class TankCardEditor extends HTMLElement {
   connectedCallback() {
@@ -281,8 +329,8 @@ customElements.define("saints-tank-card-editor", TankCardEditor);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
-  type: "tank-card",
-  name: "Tank Card",
+  type: "saints-tank-card",
+  name: "Saint`s Tank Card",
   preview: true,
-  description: "Displays the fill level of your tanks using consumption or level sensors."
+  description: "Displays the fill level of your tank using level sensors."
 });
