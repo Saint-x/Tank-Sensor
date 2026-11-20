@@ -15,19 +15,19 @@ Visualization for a water tank for Home Assistant
 
 <img width="451" height="640" alt="image" src="https://github.com/user-attachments/assets/a34061c5-b605-44a1-9ce6-83978454c5d4" />
 
-# 📦 Installation
+## 📦 Installation
 
-## Easy installation → [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Saint-x&repository=Tank-Sensor&category=plugin)
+### Easy installation → [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Saint-x&repository=Tank-Sensor&category=plugin)
 
 
-## HA Marketplace (HACS)
+### HA Marketplace (HACS)
 
 1. Open **Setting -> Marketplace**
 3. Search for **Tank Sensor**
 4. Install the card
 5. Reload Home Assistant or the browser
 
-## Manual
+### Manual
 
 1. Download `tank-card.js`
 2. Copy it to `/config/www/community/tank-sensor/`
@@ -42,7 +42,7 @@ Then reload the browser, e.g. with **Ctrl + F5**.
 ---
 
 
-# ⚙️ Example configuration
+## ⚙️ Example configuration
 
 Configuration over YAML or UI
 
@@ -60,7 +60,7 @@ water_level_sensor: sensor.zisterne_wassersensor_liquid_depth
 last_data_time: sensor.tank_last_seen
 ```
 
-# 📋 Configuration options
+## 📋 Configuration options
 
 | Option               | Default                      | Type    | Description |
 |----------------------|------------------------------|---------|-------------|
@@ -74,3 +74,7 @@ last_data_time: sensor.tank_last_seen
 | `show_unittank`      | `true`                       | boolean | Show the amount of tank fill inside the Tank |
 | `bg_color`       | `rgba(255, 255, 255, 1)`             | list    | RGBa Color for Tank Background |
 | `last_data_time`       | `""`                         | string  | Show under the Tank the Date & Time from the last data from the Sensor |
+
+
+Original created by jinxx-22 Tank-Card v0.3
+https://github.com/jinx-22/tank-card/
